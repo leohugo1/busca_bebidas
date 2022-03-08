@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  database_bebida:
+    image: postgres
+    container_name: database_bebida
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTEGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=busca_bebidas
+    volumes:
+      - pgdata:/data/postgres
+  app:
+    build: .
+    container_name: busca_bebidas
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/usr/app
+    environment:
+      DATABASE_URL: "postgresql://postgres:admin@database_bebida:5432/busca_bebidas?schema=public"
+    links:
+      - database_bebida
+    depends_on:
+      - database_bebida
+
+volumes:
+  pgdata:
+    driver: local
