@@ -1,0 +1,50 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  name       String
+  password   String
+  penalidade Int?
+  username   String   @unique
+  ip         String?
+  avatar     String?
+  report     String[]
+  Bebida     Bebida[]
+  Loja       Loja[]
+
+  @@map("user")
+}
+
+model Loja {
+  id        String   @id @default(uuid())
+  name      String
+  latitude  String
+  longitude String
+  user_id   String
+  user      User     @relation(fields: [user_id], references: [id])
+  Bebida    Bebida[]
+
+  @@map("loja")
+}
+
+model Bebida {
+  id         String   @id @default(uuid())
+  name       String
+  volume     Int
+  valor      Decimal
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id])
+  loja       Loja     @relation(fields: [loja_id], references: [id])
+  user_id    String
+  loja_id    String
+
+  @@map("bebidas")
+}
